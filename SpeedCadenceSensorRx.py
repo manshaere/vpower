@@ -42,7 +42,6 @@ class SpeedCadenceSensorRx(event.EventCallback):
     def open(self):
         self.channel.open()
         self.channel.registerCallback(self)  # -> will callback process(msg) method below
-
     def close(self):
         self.channel.close()
 
@@ -73,27 +72,42 @@ class SpeedCadenceSensorRx(event.EventCallback):
             message_data = SpeedCadenceData()
             dp.parse(msg.getPayload(), message_data)
 
-            if VPOWER_DEBUG: message_data.print_speed()
+            # if VPOWER_DEBUG: message_data.print_speed()
+            if VPOWER_DEBUG: message_data.print_cadence()
 
             if self.currentData is None:
                 self.previousData = self.currentData
                 self.currentData = message_data
                 return
 
-            if not self.stopped() and message_data.speedEventTime != self.currentData.speedEventTime:
+            if not self.stopped() and message_data.cadenceEventTime != self.currentData.cadenceEventTime:
                 # Calculate speed from previously-held data, if there is a change
                 self.previousData = self.currentData
                 self.currentData = message_data
                 if self.previousData is not None:
-                    current_event_time = self.currentData.speedEventTime
-                    if current_event_time < self.previousData.speedEventTime:
+                    current_event_time = self.currentData.cadenceEventTime
+                    if current_event_time < self.previousData.cadenceEventTime:
                         current_event_time += 65536 / 1024.0
-                    time_diff = current_event_time - self.previousData.speedEventTime
-                    current_rev_count = self.currentData.speedRevCount
-                    if current_rev_count < self.previousData.speedRevCount:
+                    time_diff = current_event_time - self.previousData.cadenceEventTime
+                    current_rev_count = self.currentData.cadenceRevCount
+                    if current_rev_count < self.previousData.cadenceRevCount:
                         current_rev_count += 65536
-                    revs_diff = current_rev_count - self.previousData.speedRevCount
+                    revs_diff = current_rev_count - self.previousData.cadenceRevCount
                     self.set_revs_per_sec(revs_diff / time_diff)
+            # if not self.stopped() and message_data.speedEventTime != self.currentData.speedEventTime:
+            #     # Calculate speed from previously-held data, if there is a change
+            #     self.previousData = self.currentData
+            #     self.currentData = message_data
+            #     if self.previousData is not None:
+            #         current_event_time = self.currentData.speedEventTime
+            #         if current_event_time < self.previousData.speedEventTime:
+            #             current_event_time += 65536 / 1024.0
+            #         time_diff = current_event_time - self.previousData.speedEventTime
+            #         current_rev_count = self.currentData.speedRevCount
+            #         if current_rev_count < self.previousData.speedRevCount:
+            #             current_rev_count += 65536
+            #         revs_diff = current_rev_count - self.previousData.speedRevCount
+            #         self.set_revs_per_sec(revs_diff / time_diff)
 
         elif isinstance(msg, message.ChannelStatusMessage):
             if msg.getStatus() == EVENT_CHANNEL_CLOSED:

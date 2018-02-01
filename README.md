@@ -78,6 +78,7 @@ and under $15 for the USB hub/ethernet adaptor to be able to build it :-)
 
     cd /boot
     sudo git clone https://github.com/dhague/vpower.git
+    (for Shawn Lee XBike, do "sudo git clone https://github.com/youlsa/vpower.git")
     cd vpower
     sudo pip install -r requirements.txt
 

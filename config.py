@@ -5,6 +5,7 @@ from ant.core import log
 from BtAtsPowerCalculator import BtAtsPowerCalculator
 from KurtKineticPowerCalculator import KurtKineticPowerCalculator
 from TacxBlueMotionPowerCalculator import TacxBlueMotionPowerCalculator
+from XBikePowerCalculator import XBikePowerCalculator
 from constants import *
 import hashlib
 
